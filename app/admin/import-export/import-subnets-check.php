@@ -64,6 +64,20 @@ foreach ($all_vrfs as $vrf) {
 	$vrf_data[$vrf['rd']] = $vrf;	# add also RD as VRF name, will allow matches against both name and RD
 }
 
+# fetch all Customers
+$all_customers = $Admin->fetch_all_objects("customers", "id");
+if (!$all_customers) { $all_customers = array(); }
+# insert default customer in the list
+array_splice($all_customers,0,0,(object) array(array('id' => '0', 'title' => 'default')));
+# process for easier later check
+$customer_data = array();
+foreach ($all_customers as $customer) {
+	//cast
+	$customer = (array) $customer;
+	$customer_data[$customer['title']] = $customer;
+}
+
+
 # fetch all sections and load all subnets
 $all_sections = $Sections->fetch_all_sections();
 
@@ -136,6 +150,18 @@ foreach ($data as &$cdata) {
 		$cdata['vrfId'] = 0;
 	}
 
+	# Check if customer is provided and valid and link it if it is
+	if (!empty($cdata['customer'])) {
+		if (!isset($customer_data[$cdata['customer']])) {
+			$msg.= "Invalid Customer."; $action = "error";
+		} else {
+			$cdata['customer_id'] = $customer_data[$cdata['customer']]['id'];
+		}
+	} else {
+		# no customer provided
+		$cdata['id'] = 0;
+	}
+
 	# Check if VLAN Domain and VLAN are valid, and link them if they are
 	if (!empty($cdata['domain'])) { $cdom = $cdata['domain']; } else { $cdom = "default"; }
 	if (!isset($vlan_data[$cdom])) {
@@ -187,6 +213,7 @@ foreach ($data as &$cdata) {
 			$action = "skip"; # skip duplicate fields if identical, update if different
 			if ($cdata['description'] != $cedata['description']) { $msg.= "Subnet description will be updated."; $action = "edit"; }
 			if ($cdata['vlanId'] != $cedata['vlanId']) { $msg.= "VLAN ID will be updated."; $action = "edit"; }
+			if ($cdata['customer_id'] != $cedata['customer_id']) { $msg.= "Customer will be updated."; $action = "edit"; }
 			# Check if the values of the custom fields have changed
 			if(sizeof($custom_fields) > 0) {
 				foreach($custom_fields as $myField) {

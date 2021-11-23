@@ -35,7 +35,8 @@ if ($type == 'subnets'){
 	$worksheet->write($lineCount, 4, _('VLAN'));
 	$worksheet->write($lineCount, 5, _('Domain'));
 	$worksheet->write($lineCount, 6, _('VRF'));
-	$fc =7 ;
+	$worksheet->write($lineCount, 7, _('Customer'));
+	$fc =8 ;
 	foreach($custom_address_fields as $k=>$f) {
 		$worksheet->write($lineCount, $fc, $k);
 		$fc++;
@@ -52,13 +53,14 @@ elseif ($type == 'ipaddr'){
 	$worksheet->write($lineCount, 3, _('Description'));
 	$worksheet->write($lineCount, 4, _('VRF'));
 	$worksheet->write($lineCount, 5, _('Subnet'));
-	$worksheet->write($lineCount, 6, _('MAC'));
-	$worksheet->write($lineCount, 7, _('Owner'));
-	$worksheet->write($lineCount, 8, _('Device'));
-	$worksheet->write($lineCount, 9, _('Note'));
-	$worksheet->write($lineCount, 10, _('Tag'));
-	$worksheet->write($lineCount, 11, _('Is_Gateway'));
-	$fc =12 ;
+	$worksheet->write($lineCount, 6, _('Customer'));
+	$worksheet->write($lineCount, 7, _('MAC'));
+	$worksheet->write($lineCount, 8, _('Owner'));
+	$worksheet->write($lineCount, 9, _('Device'));
+	$worksheet->write($lineCount, 10, _('Note'));
+	$worksheet->write($lineCount, 11, _('Tag'));
+	$worksheet->write($lineCount, 12, _('Is_Gateway'));
+	$fc =13 ;
 	foreach($custom_address_fields as $k=>$f) {
 		$worksheet->write($lineCount, $fc, $k);
 		$fc++;
@@ -138,6 +140,27 @@ elseif ($type == 'l2dom'){
 	foreach($custom_address_fields as $k=>$f) {
 		$worksheet->write($lineCount, $fc, $k);
 		$fc++;
+	}
+
+} elseif ($type == 'customers'){
+	$curColumn=0;
+	//get all custom fields!
+	$custom_address_fields = $Tools->fetch_custom_fields('customers');
+	// set headers
+	$worksheet->write($lineCount, $curColumn++, _('title'));
+	$worksheet->write($lineCount, $curColumn++, _('address'));
+	$worksheet->write($lineCount, $curColumn++, _('postcode'));
+	$worksheet->write($lineCount, $curColumn++, _('city'));
+	$worksheet->write($lineCount, $curColumn++, _('state'));
+	// $worksheet->write($lineCount, $curColumn++, _('lat'));
+	// $worksheet->write($lineCount, $curColumn++, _('long'));
+	$worksheet->write($lineCount, $curColumn++, _('contact_person'));
+	$worksheet->write($lineCount, $curColumn++, _('contact_phone'));
+	$worksheet->write($lineCount, $curColumn++, _('contact_mail'));
+	$worksheet->write($lineCount, $curColumn++, _('note'));
+	foreach($custom_address_fields as $k=>$f) {
+		$worksheet->write($lineCount, $curColumn, $k);
+		$curColumn++;
 	}
 
 }
